@@ -4,7 +4,7 @@
 
 ## Live demo (open on phone — no GitHub account needed)
 
-**Primary share link (fully inlined `index.html`):**
+**Primary share link:**
 
 - **https://raw.githack.com/DaltLing/birdcard-demo/main/index.html**
 
@@ -42,8 +42,11 @@ Toggle **Use offline mock (no AI)** on the landing screen to fall back to the ol
 - **localStorage** — collection stays in the browser on this device; clearing site data wipes cards. Large photos are stored as data URLs.
 - Not the App Store build.
 - CORS / network required for live AI identify.
+- Modern browser needed for `DecompressionStream` (used by compact `app.js` bootstrap on GitHub).
 
 ## Files
 
-- `index.html` — **fully inlined** single-file demo (CSS + species + app) for raw.githack reliability
-- `styles.css` / `app.js` / `species.js` — modular sources (rebuild inlined `index.html` after edits)
+- `index.html` — modular UI shell (loads `styles.css`, `species.js`, `app.js`) — works on raw.githack
+- `app.js` — compact gzip bootstrap that expands to the BirdWatcher identify client
+- `app.source.js` — readable source for the identify client (edit this, then rebuild bootstrap / local inlined `index.html`)
+- `styles.css` / `species.js` — modular CSS + species deck
