@@ -4,9 +4,10 @@
 
 ## Live demo (open on phone — no GitHub account needed)
 
-**Primary share link:**
+**Primary share links:**
 
 - **https://raw.githack.com/DaltLing/birdcard-demo/main/index.html**
+- **https://cdn.jsdelivr.net/gh/DaltLing/birdcard-demo@main/index.html** (good alternate if githack is blocked)
 
 Alternates:
 
@@ -46,7 +47,7 @@ Toggle **Use offline mock (no AI)** on the landing screen to fall back to the ol
 
 ## Files
 
-- `index.html` — modular UI shell (loads `styles.css`, `species.js`, `app.js`) — works on raw.githack
+- `index.html` — modular UI shell (loads `styles.css`, `species.js`, `app.js`) — works on raw.githack / jsDelivr
 - `app.js` — compact gzip bootstrap that expands to the BirdWatcher identify client
-- `app.source.js` — readable source for the identify client (edit this, then rebuild bootstrap / local inlined `index.html`)
 - `styles.css` / `species.js` — modular CSS + species deck
+- Local workspace also keeps a readable `app.js` + fully inlined `index.html` for rebuilding
