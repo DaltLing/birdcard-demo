@@ -6,7 +6,214 @@
   <meta name="theme-color" content="#0f1f17" />
   <meta name="description" content="birdcard Phase 1 demo — snap a bird, mock-identify it, collect cards." />
   <title>birdcard · Phase 1 demo</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/DaltLing/birdcard-demo@main/styles.css" />
+<style>
+/* birdcard Phase 1 demo — nature / green aesthetic */
+:root {
+  --bg: #0f1f17;
+  --bg2: #163024;
+  --card: #1a3a2a;
+  --card2: #214832;
+  --ink: #e8f5e9;
+  --muted: #a5c9b0;
+  --accent: #7cb342;
+  --accent2: #c8e6c9;
+  --gold: #ffd54f;
+  --danger: #ef9a9a;
+  --radius: 18px;
+  --shadow: 0 12px 40px rgba(0,0,0,.35);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; min-height: 100%;
+  background: radial-gradient(1200px 600px at 20% -10%, #234d35 0%, transparent 55%),
+              radial-gradient(900px 500px at 100% 10%, #1b3d2c 0%, transparent 50%),
+              var(--bg);
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+body { padding-bottom: calc(72px + var(--safe-bottom)); }
+button, select, input { font: inherit; }
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  position: relative;
+}
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 14px 16px;
+  background: rgba(15,31,23,.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200,230,201,.12);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .02em; }
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: linear-gradient(145deg, #8bc34a, #2e7d32);
+  box-shadow: 0 4px 14px rgba(124,179,66,.35);
+  font-size: 18px;
+}
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: #1b2e20;
+  background: var(--gold); padding: 4px 8px; border-radius: 999px;
+  white-space: nowrap;
+}
+.screen { display: none; padding: 20px 16px 28px; animation: rise .35s ease; }
+.screen.active { display: block; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: none;} }
+.hero {
+  text-align: center; padding: 28px 8px 18px;
+}
+.hero h1 {
+  margin: 0 0 10px; font-size: 1.85rem; line-height: 1.15;
+  background: linear-gradient(90deg, #e8f5e9, #aed581);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero p { margin: 0 auto; max-width: 34ch; color: var(--muted); line-height: 1.5; }
+.demo-note {
+  margin: 18px 0 0; padding: 12px 14px; border-radius: 14px;
+  background: rgba(255,213,79,.12); border: 1px solid rgba(255,213,79,.35);
+  color: #ffe082; font-size: .9rem; line-height: 1.4;
+}
+.stack { display: grid; gap: 14px; margin-top: 22px; }
+.card {
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid rgba(200,230,201,.14);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.card h2 { margin: 0 0 8px; font-size: 1.15rem; }
+.card p { margin: 0; color: var(--muted); line-height: 1.45; font-size: .95rem; }
+.label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+select, .btn, .file-btn {
+  width: 100%; border: 0; border-radius: 14px; padding: 14px 16px;
+}
+select {
+  background: #0f2419; color: var(--ink);
+  border: 1px solid rgba(200,230,201,.2);
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--accent2) 50%),
+                    linear-gradient(135deg, var(--accent2) 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(1em + 4px), calc(100% - 15px) calc(1em + 4px);
+  background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
+}
+.btn {
+  cursor: pointer; font-weight: 700; color: #102016;
+  background: linear-gradient(180deg, #9ccc65, #7cb342);
+  box-shadow: 0 8px 20px rgba(124,179,66,.28);
+}
+.btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.btn.secondary {
+  background: transparent; color: var(--accent2);
+  border: 1px solid rgba(200,230,201,.28); box-shadow: none;
+}
+.btn.ghost { background: rgba(255,255,255,.06); color: var(--ink); box-shadow: none; }
+.btn.row { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.preview-wrap {
+  margin-top: 12px; border-radius: 16px; overflow: hidden;
+  background: #0b1a12; aspect-ratio: 4/3; display: grid; place-items: center;
+  border: 1px dashed rgba(200,230,201,.25);
+}
+.preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.preview-wrap .placeholder { color: var(--muted); text-align: center; padding: 20px; font-size: .95rem; }
+.file-btn {
+  display: grid; place-items: center; cursor: pointer; font-weight: 700;
+  color: var(--accent2); background: rgba(124,179,66,.12);
+  border: 1px solid rgba(124,179,66,.35);
+}
+input[type=file] { display: none; }
+.identifying {
+  text-align: center; padding: 36px 12px;
+}
+.spinner {
+  width: 54px; height: 54px; margin: 0 auto 16px; border-radius: 50%;
+  border: 3px solid rgba(200,230,201,.2); border-top-color: var(--accent);
+  animation: spin 0.85s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.guess {
+  display: grid; gap: 12px;
+}
+.guess-main {
+  display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center;
+}
+.guess-main img {
+  width: 96px; height: 96px; border-radius: 16px; object-fit: cover;
+  background: #0b1a12;
+}
+.confidence {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 6px; font-size: .85rem; color: var(--gold); font-weight: 700;
+}
+.candidates { display: grid; gap: 8px; margin-top: 6px; }
+.cand {
+  display: grid; grid-template-columns: 56px 1fr auto; gap: 10px; align-items: center;
+  padding: 10px; border-radius: 14px; background: rgba(0,0,0,.18);
+  border: 1px solid transparent; cursor: pointer; text-align: left; color: inherit;
+}
+.cand.selected, .cand:hover { border-color: rgba(124,179,66,.55); background: rgba(124,179,66,.12); }
+.cand img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; }
+.cand .pct { color: var(--muted); font-size: .85rem; font-weight: 700; }
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  max-width: 480px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px; padding: 10px 12px calc(10px + var(--safe-bottom));
+  background: rgba(15,31,23,.92); backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(200,230,201,.12);
+}
+.nav button {
+  border: 0; border-radius: 14px; padding: 10px 8px;
+  background: transparent; color: var(--muted); font-weight: 700; font-size: .85rem;
+  cursor: pointer;
+}
+.nav button.active { background: rgba(124,179,66,.18); color: var(--accent2); }
+.grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.tile {
+  border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer;
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(200,230,201,.12);
+  box-shadow: var(--shadow);
+}
+.tile img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #0b1a12; }
+.tile .meta { padding: 10px 12px 12px; }
+.tile .meta strong { display: block; font-size: .95rem; }
+.tile .meta span { color: var(--muted); font-size: .75rem; }
+.empty {
+  text-align: center; padding: 40px 16px; color: var(--muted);
+}
+.detail-hero img {
+  width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 18px;
+  background: #0b1a12; display: block;
+}
+.facts { display: grid; gap: 10px; margin-top: 14px; }
+.fact {
+  background: rgba(0,0,0,.18); border-radius: 14px; padding: 12px 14px;
+}
+.fact dt { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 0 0 4px; }
+.fact dd { margin: 0; line-height: 1.4; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(78px + var(--safe-bottom));
+  transform: translateX(-50%) translateY(20px); opacity: 0;
+  background: #2e7d32; color: white; padding: 12px 16px; border-radius: 999px;
+  font-weight: 700; font-size: .9rem; pointer-events: none; transition: .25s ease;
+  z-index: 50; max-width: calc(100% - 32px); text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.muted { color: var(--muted); }
+.row-actions { display: grid; gap: 10px; margin-top: 14px; }
+.tiny { font-size: .8rem; color: var(--muted); margin-top: 10px; text-align: center; }
+
+</style>
 </head>
 <body>
   <div class="app">
@@ -147,7 +354,13 @@
     </nav>
   </div>
   <div class="toast" id="toast" role="status"></div>
-  <script src="https://cdn.jsdelivr.net/gh/DaltLing/birdcard-demo@main/species.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/DaltLing/birdcard-demo@main/app.js"></script>
+
+<script>
+window.BIRDCARD_SPECIES=[{"id":"american-robin","common_name":"American Robin","scientific_name":"Turdus migratorius","family":"Turdidae","habitat":"Lawns, parks, woodland edges","appearance":"Gray-brown back, warm orange breast, dark head","range_summary":"Breeds across most of US and Canada; winters southern US","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=American%20Robin"},{"id":"northern-cardinal","common_name":"Northern Cardinal","scientific_name":"Cardinalis cardinalis","family":"Cardinalidae","habitat":"Woodland edges, gardens, shrubby yards","appearance":"Male bright red with crest; female warm tan with red accents","range_summary":"Eastern and central US into southern Ontario","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Northern%20Cardinal"},{"id":"blue-jay","common_name":"Blue Jay","scientific_name":"Cyanocitta cristata","family":"Corvidae","habitat":"Forests, parks, suburban yards","appearance":"Blue upperparts, white underparts, black necklace, crest","range_summary":"Eastern and central North America","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Blue%20Jay"},{"id":"black-capped-chickadee","common_name":"Black-capped Chickadee","scientific_name":"Poecile atricapillus","family":"Paridae","habitat":"Mixed forests, backyard feeders","appearance":"Black cap and bib, white cheeks, soft gray body","range_summary":"Northern US and much of Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Black-capped%20Chickadee"},{"id":"downy-woodpecker","common_name":"Downy Woodpecker","scientific_name":"Dryobates pubescens","family":"Picidae","habitat":"Woodlands, orchards, feeders","appearance":"Small black-and-white barred back; males have red nape","range_summary":"Nearly continent-wide in US and Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Downy%20Woodpecker"},{"id":"mourning-dove","common_name":"Mourning Dove","scientific_name":"Zenaida macroura","family":"Columbidae","habitat":"Open country and suburbs","appearance":"Soft gray-brown with long pointed tail","range_summary":"Widespread US and southern Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Mourning%20Dove"},{"id":"house-finch","common_name":"House Finch","scientific_name":"Haemorhous mexicanus","family":"Fringillidae","habitat":"Suburbs and parks","appearance":"Male red on head and breast with streaked sides","range_summary":"Widespread US; expanding in southern Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=House%20Finch"},{"id":"american-goldfinch","common_name":"American Goldfinch","scientific_name":"Spinus tristis","family":"Fringillidae","habitat":"Weedy fields, edges, feeders","appearance":"Breeding male bright yellow with black cap and wings","range_summary":"US and southern Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=American%20Goldfinch"},{"id":"song-sparrow","common_name":"Song Sparrow","scientific_name":"Melospiza melodia","family":"Passerellidae","habitat":"Brushy edges and marshes","appearance":"Streaked brown with a central breast spot","range_summary":"Continent-wide","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Song%20Sparrow"},{"id":"dark-eyed-junco","common_name":"Dark-eyed Junco","scientific_name":"Junco hyemalis","family":"Passerellidae","habitat":"Woods; feeders in winter","appearance":"Slate-colored with white belly and white outer tail","range_summary":"Breeds north; winters across much of US","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Dark-eyed%20Junco"},{"id":"red-winged-blackbird","common_name":"Red-winged Blackbird","scientific_name":"Agelaius phoeniceus","family":"Icteridae","habitat":"Marshes and wet fields","appearance":"Male glossy black with red-and-yellow shoulder patches","range_summary":"Widespread wetlands","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Red-winged%20Blackbird"},{"id":"baltimore-oriole","common_name":"Baltimore Oriole","scientific_name":"Icterus galbula","family":"Icteridae","habitat":"Open woods and parks","appearance":"Male fiery orange and black","range_summary":"Eastern US and southern Canada in summer","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Baltimore%20Oriole"},{"id":"eastern-bluebird","common_name":"Eastern Bluebird","scientific_name":"Sialia sialis","family":"Turdidae","habitat":"Open fields with nest boxes","appearance":"Male vivid blue with rusty breast","range_summary":"Eastern US and southeastern Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Eastern%20Bluebird"},{"id":"cedar-waxwing","common_name":"Cedar Waxwing","scientific_name":"Bombycilla cedrorum","family":"Bombycillidae","habitat":"Fruiting trees, orchards","appearance":"Sleek tan with black mask and yellow tip on tail","range_summary":"US and southern Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Cedar%20Waxwing"},{"id":"ruby-throated-hummingbird","common_name":"Ruby-throated Hummingbird","scientific_name":"Archilochus colubris","family":"Trochilidae","habitat":"Gardens, woodland edges","appearance":"Tiny; male with ruby throat, metallic green back","range_summary":"Eastern North America in summer","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Ruby-throated%20Hummingbird"},{"id":"great-blue-heron","common_name":"Great Blue Heron","scientific_name":"Ardea herodias","family":"Ardeidae","habitat":"Shorelines, marshes, ponds","appearance":"Tall blue-gray wader with long S-shaped neck","range_summary":"Near water across US and Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Great%20Blue%20Heron"},{"id":"canada-goose","common_name":"Canada Goose","scientific_name":"Branta canadensis","family":"Anatidae","habitat":"Lakes, parks, fields","appearance":"Brown body, black neck, white chinstrap","range_summary":"Continent-wide","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Canada%20Goose"},{"id":"mallard","common_name":"Mallard","scientific_name":"Anas platyrhynchos","family":"Anatidae","habitat":"Ponds, marshes, parks","appearance":"Male green head and yellow bill; female mottled brown","range_summary":"Widespread wetlands","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Mallard"},{"id":"bald-eagle","common_name":"Bald Eagle","scientific_name":"Haliaeetus leucocephalus","family":"Accipitridae","habitat":"Lakes, rivers, coasts","appearance":"Adult white head and tail, dark body, huge yellow bill","range_summary":"Recovered across much of US and Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Bald%20Eagle"},{"id":"red-tailed-hawk","common_name":"Red-tailed Hawk","scientific_name":"Buteo jamaicensis","family":"Accipitridae","habitat":"Open country, roadsides","appearance":"Broad wings; adults with brick-red tail","range_summary":"Continent-wide","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Red-tailed%20Hawk"},{"id":"great-horned-owl","common_name":"Great Horned Owl","scientific_name":"Bubo virginianus","family":"Strigidae","habitat":"Forests, deserts, suburbs","appearance":"Large owl with ear tufts and yellow eyes","range_summary":"Continent-wide","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Great%20Horned%20Owl"},{"id":"wild-turkey","common_name":"Wild Turkey","scientific_name":"Meleagris gallopavo","family":"Phasianidae","habitat":"Woods and fields","appearance":"Large dark bird with fan tail (males)","range_summary":"Much of US and southern Canada","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Wild%20Turkey"},{"id":"tufted-titmouse","common_name":"Tufted Titmouse","scientific_name":"Baeolophus bicolor","family":"Paridae","habitat":"Eastern deciduous woods, feeders","appearance":"Gray with crest and peach flanks","range_summary":"Eastern United States","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Tufted%20Titmouse"},{"id":"carolina-wren","common_name":"Carolina Wren","scientific_name":"Thryothorus ludovicianus","family":"Troglodytidae","habitat":"Thickets, yards","appearance":"Warm brown with bold white eyebrow","range_summary":"Southeast and expanding north","reference_image_url":"https://placehold.co/400x300/1a3a2a/c8e6c9?text=Carolina%20Wren"}];
+
+</script>
+<script>
+/* PLACEHOLDER_APP_JS */
+</script>
 </body>
 </html>
