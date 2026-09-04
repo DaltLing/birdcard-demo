@@ -4,17 +4,16 @@
 
 ## Live demo (open on phone — no GitHub account needed)
 
-**Best share link (works without enabling Pages):**
+**Primary share link:**
 
-- **https://raw.githack.com/DaltLing/birdcard-demo/main/index.html**
+- **https://htmlpreview.github.io/?https://github.com/DaltLing/birdcard-demo/blob/main/index.html**
 
-GitHub Pages (if/when enabled on the repo):
+Alternates:
 
-- https://daltling.github.io/birdcard-demo/
+- https://raw.githack.com/DaltLing/birdcard-demo/main/index.html
+- https://daltling.github.io/birdcard-demo/ (enable in Settings → Pages → Deploy from branch `main` / `/`)
 
-Other fallbacks:
-
-- https://htmlpreview.github.io/?https://github.com/DaltLing/birdcard-demo/blob/main/index.html
+GitHub Pages could not be enabled via API (`gh` unauthenticated / empty `GH_TOKEN`). Repo is public — one-click Pages enable gives the cleanest URL.
 
 ## What it covers
 
@@ -29,21 +28,13 @@ Tone: encouraging, playful, green/nature aesthetic. Labeled **Phase 1 demo (mock
 
 ## Limits
 
-- **Mock ID only** — not a real vision model; ~32 common US/Canada birds embedded, with light region bias.
+- **Mock ID only** — not a real vision model; 24 common US/Canada birds embedded, with light region bias.
 - **localStorage** — collection stays in the browser on this device; clearing site data wipes cards. Large photos are stored as data URLs.
 - Not the App Store build.
 
-## Run locally
-
-Open `index.html` (self-contained), or serve the folder:
-
-```bash
-python3 -m http.server 8080
-```
-
-Optional split sources: `styles.css`, `app.js` (also published for editing).
-
 ## Files
 
-- `index.html` — full demo (CSS/JS inlined for easy hosting)
-- `styles.css` / `app.js` — same assets as separate files
+- `index.html` — UI (loads CSS/JS via jsDelivr for preview hosts)
+- `styles.css` — green/nature mobile UI
+- `app.js` — flow, mock ID, localStorage
+- `species.js` — embedded species deck
