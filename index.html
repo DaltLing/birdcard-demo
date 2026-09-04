@@ -1,253 +1,157 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" /><meta name="theme-color" content="#0f1f17" /><meta name="description" content="birdcard Phase 1 demo — snap a bird, mock-identify it, collect cards." /><title>birdcard · Phase 1 demo</title>
-<style>:root{--bg:#0f1f17;--bg2:#163024;--card:#1a3a2a;--card2:#214832;--ink:#e8f5e9;--muted:#a5c9b0;--accent:#7cb342;--accent2:#c8e6c9;--gold:#ffd54f;--danger:#ef9a9a;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.35);--safe-bottom:env(safe-area-inset-bottom,0px);font-family:"Segoe UI",system-ui,-apple-system,sans-serif;}*{box-sizing:border-box;}html,body{margin:0;padding:0;min-height:100%;background:radial-gradient(1200px 600px at 20% -10%,#234d35 0%,transparent 55%),radial-gradient(900px 500px at 100% 10%,#1b3d2c 0%,transparent 50%),var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent;}body{padding-bottom:calc(72px+var(--safe-bottom));}button,select,input{font:inherit;}.app{max-width:480px;margin:0 auto;min-height:100dvh;position:relative;}.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:rgba(15,31,23,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,230,201,.12);}.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em;}.brand-mark{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#8bc34a,#2e7d32);box-shadow:0 4px 14px rgba(124,179,66,.35);font-size:18px;}.badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#1b2e20;background:var(--gold);padding:4px 8px;border-radius:999px;white-space:nowrap;}.screen{display:none;padding:20px 16px 28px;animation:rise .35s ease;}.screen.active{display:block;}@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}.hero{text-align:center;padding:28px 8px 18px;}.hero h1{margin:0 0 10px;font-size:1.85rem;line-height:1.15;background:linear-gradient(90deg,#e8f5e9,#aed581);-webkit-background-clip:text;background-clip:text;color:transparent;}.hero p{margin:0 auto;max-width:34ch;color:var(--muted);line-height:1.5;}.demo-note{margin:18px 0 0;padding:12px 14px;border-radius:14px;background:rgba(255,213,79,.12);border:1px solid rgba(255,213,79,.35);color:#ffe082;font-size:.9rem;line-height:1.4;}.stack{display:grid;gap:14px;margin-top:22px;}.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid rgba(200,230,201,.14);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}.card h2{margin:0 0 8px;font-size:1.15rem;}.card p{margin:0;color:var(--muted);line-height:1.45;font-size:.95rem;}.label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:8px;font-weight:600;}select,.btn,.file-btn{width:100%;border:0;border-radius:14px;padding:14px 16px;}select{background:#0f2419;color:var(--ink);border:1px solid rgba(200,230,201,.2);appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--accent2) 50%),linear-gradient(135deg,var(--accent2) 50%,transparent 50%);background-position:calc(100% - 20px) calc(1em+4px),calc(100% - 15px) calc(1em+4px);background-size:5px 5px,5px 5px;background-repeat:no-repeat;}.btn{cursor:pointer;font-weight:700;color:#102016;background:linear-gradient(180deg,#9ccc65,#7cb342);box-shadow:0 8px 20px rgba(124,179,66,.28);}.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}.btn.secondary{background:transparent;color:var(--accent2);border:1px solid rgba(200,230,201,.28);box-shadow:none;}.btn.ghost{background:rgba(255,255,255,.06);color:var(--ink);box-shadow:none;}.btn.row{display:flex;align-items:center;justify-content:center;gap:8px;}.preview-wrap{margin-top:12px;border-radius:16px;overflow:hidden;background:#0b1a12;aspect-ratio:4/3;display:grid;place-items:center;border:1px dashed rgba(200,230,201,.25);}.preview-wrap img{width:100%;height:100%;object-fit:cover;display:block;}.preview-wrap .placeholder{color:var(--muted);text-align:center;padding:20px;font-size:.95rem;}.file-btn{display:grid;place-items:center;cursor:pointer;font-weight:700;color:var(--accent2);background:rgba(124,179,66,.12);border:1px solid rgba(124,179,66,.35);}input[type=file]{display:none;}.identifying{text-align:center;padding:36px 12px;}.spinner{width:54px;height:54px;margin:0 auto 16px;border-radius:50%;border:3px solid rgba(200,230,201,.2);border-top-color:var(--accent);animation:spin 0.85s linear infinite;}@keyframes spin{to{transform:rotate(360deg);}}.guess{display:grid;gap:12px;}.guess-main{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center;}.guess-main img{width:96px;height:96px;border-radius:16px;object-fit:cover;background:#0b1a12;}.confidence{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:.85rem;color:var(--gold);font-weight:700;}.candidates{display:grid;gap:8px;margin-top:6px;}.cand{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:10px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid transparent;cursor:pointer;text-align:left;color:inherit;}.cand.selected,.cand:hover{border-color:rgba(124,179,66,.55);background:rgba(124,179,66,.12);}.cand img{width:56px;height:56px;border-radius:12px;object-fit:cover;}.cand .pct{color:var(--muted);font-size:.85rem;font-weight:700;}.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;max-width:480px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:10px 12px calc(10px+var(--safe-bottom));background:rgba(15,31,23,.92);backdrop-filter:blur(14px);border-top:1px solid rgba(200,230,201,.12);}.nav button{border:0;border-radius:14px;padding:10px 8px;background:transparent;color:var(--muted);font-weight:700;font-size:.85rem;cursor:pointer;}.nav button.active{background:rgba(124,179,66,.18);color:var(--accent2);}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}.tile{border:0;padding:0;text-align:left;color:inherit;cursor:pointer;background:linear-gradient(180deg,var(--card2),var(--card));border-radius:16px;overflow:hidden;border:1px solid rgba(200,230,201,.12);box-shadow:var(--shadow);}.tile img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#0b1a12;}.tile .meta{padding:10px 12px 12px;}.tile .meta strong{display:block;font-size:.95rem;}.tile .meta span{color:var(--muted);font-size:.75rem;}.empty{text-align:center;padding:40px 16px;color:var(--muted);}.detail-hero img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:18px;background:#0b1a12;display:block;}.facts{display:grid;gap:10px;margin-top:14px;}.fact{background:rgba(0,0,0,.18);border-radius:14px;padding:12px 14px;}.fact dt{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;}.fact dd{margin:0;line-height:1.4;}.toast{position:fixed;left:50%;bottom:calc(78px+var(--safe-bottom));transform:translateX(-50%) translateY(20px);opacity:0;background:#2e7d32;color:white;padding:12px 16px;border-radius:999px;font-weight:700;font-size:.9rem;pointer-events:none;transition:.25s ease;z-index:50;max-width:calc(100% - 32px);text-align:center;}.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}.muted{color:var(--muted);}.row-actions{display:grid;gap:10px;margin-top:14px;}.tiny{font-size:.8rem;color:var(--muted);margin-top:10px;text-align:center;}</style>
-</head><body><div class="app"><header class="topbar"><div class="brand"><div class="brand-mark" aria-hidden="true">🐦</div><div><div>birdcard</div></div></div><span class="badge">Phase 1 demo · mock ID</span></header><section id="screen-landing" class="screen active" data-screen="landing"><div class="hero"><h1>Turn backyard birds into collectible cards</h1><p>Pick your region, snap a photo, and watch a playful mock ID turn it into a card for your collection.</p><div class="demo-note">This is a <strong>Phase 1 web demo</strong> with mock identification — not the App Store build. Collection stays on this device via localStorage.</div></div><div class="stack"><div class="card"><h2>How it works</h2><p>1) Choose a US/Canada region · 2) Upload or take a photo · 3) Confirm a mock guess · 4) Grow your deck.</p></div><button class="btn row" id="btn-start">Start spotting →</button><button class="btn secondary" id="btn-skip-collection">View my collection</button></div></section><section id="screen-region" class="screen" data-screen="region"><div class="card"><h2>Where are you spotting?</h2><p>We'll bias the mock ID toward birds common in your region.</p><label class="label" for="region" style="margin-top:14px">US / Canada region</label><select id="region"><option value="">Select a region…</option><option value="northeast">Northeast US & Atlantic Canada</option><option value="southeast">Southeast US</option><option value="midwest">Midwest US & Great Lakes</option><option value="southwest">Southwest US</option><option value="west">West Coast US</option><option value="pacific-nw">Pacific Northwest & BC</option><option value="rockies">Rockies & Prairies</option><option value="canada-north">Northern Canada</option></select><div class="row-actions"><button class="btn" id="btn-region-next" disabled>Continue</button><button class="btn ghost" data-nav="landing">Back</button></div></div></section><section id="screen-capture" class="screen" data-screen="capture"><div class="card"><h2>Add a bird photo</h2><p>Use your camera on a phone, or upload from your gallery. Any bird-ish photo works — ID is mocked.</p><div class="preview-wrap" id="preview-wrap"><div class="placeholder" id="preview-placeholder">Your photo will appear here 🌿</div><img id="preview-img" alt="Selected bird photo" hidden /></div><div class="row-actions"><label class="file-btn" for="photo-input">📷 Take photo or choose file</label><input id="photo-input" type="file" accept="image/*" capture="environment" /><button class="btn" id="btn-identify" disabled>Identify bird</button><button class="btn ghost" data-nav="region">Back</button></div><p class="tiny">Region: <span id="region-label">—</span></p></div></section><section id="screen-identify" class="screen" data-screen="identify"><div class="card identifying" id="identify-loading"><div class="spinner" aria-hidden="true"></div><h2>Listening to the leaves…</h2><p class="muted">Mock AI is matching plumage vibes to our species deck.</p></div><div class="card guess" id="identify-result" hidden><h2>Top guess</h2><div class="guess-main"><img id="guess-img" alt="" /><div><strong id="guess-name">—</strong><div class="muted" id="guess-sci" style="font-style:italic;font-size:.9rem"></div><div class="confidence">✨ <span id="guess-conf">—</span> confidence</div></div></div><p class="muted" style="margin-top:8px;font-size:.9rem">Not sure? Tap another candidate below.</p><div class="candidates" id="candidates"></div><div class="row-actions"><button class="btn" id="btn-confirm">That's my bird — add card</button><button class="btn secondary" id="btn-retake">Try another photo</button></div><p class="tiny">Mock ID only · not a real vision model</p></div></section><section id="screen-collection" class="screen" data-screen="collection"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px"><div><h2 style="margin:0">Your collection</h2><p class="muted" style="margin:4px 0 0;font-size:.9rem"><span id="collection-count">0</span> cards · saved on this device</p></div><button class="btn secondary" style="width:auto;padding:10px 14px" data-nav="capture">+ Add</button></div><div id="collection-empty" class="empty card"><div style="font-size:2rem;margin-bottom:8px">🪺</div><strong>No cards yet</strong><p style="margin-top:8px">Snap your first bird and we'll nest it here.</p><button class="btn" style="margin-top:16px" data-nav="region">Start collecting</button></div><div id="collection-grid" class="grid" hidden></div></section><section id="screen-detail" class="screen" data-screen="detail"><div class="detail-hero"><img id="detail-photo" alt="Your photo" /></div><div class="card" style="margin-top:14px"><h2 id="detail-name" style="margin:0">—</h2><p id="detail-sci" class="muted" style="font-style:italic;margin:4px 0 0"></p><p class="tiny" style="text-align:left;margin-top:8px">Added <span id="detail-when"></span> · <span id="detail-region"></span></p><dl class="facts"><div class="fact"><dt>Habitat</dt><dd id="detail-habitat"></dd></div><div class="fact"><dt>Appearance</dt><dd id="detail-appearance"></dd></div><div class="fact"><dt>Range</dt><dd id="detail-range"></dd></div></dl><div class="row-actions"><button class="btn secondary" data-nav="collection">Back to collection</button><button class="btn ghost" id="btn-delete-card">Remove card</button></div></div></section><nav class="nav" aria-label="Primary"><button type="button" data-nav="landing" id="nav-home">Home</button><button type="button" data-nav="capture" id="nav-spot">Spot</button><button type="button" data-nav="collection" id="nav-deck">Deck</button></nav></div><div class="toast" id="toast" role="status"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1f17" />
+  <meta name="description" content="birdcard Phase 1 demo — snap a bird, identify it with BirdWatcher AI, collect cards." />
+  <title>birdcard · Phase 1 demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🐦</div>
+        <div>
+          <div>birdcard</div>
+        </div>
+      </div>
+      <span class="badge" id="demo-badge">Phase 1 demo · AI ID</span>
+    </header>
 
-<script>window.BIRDCARD_SPECIES=[{"id":"american-robin","common_name":"American Robin","scientific_name":"Turdus migratorius","habitat":"Lawns, parks, woodland edges","appearance":"Gray-brown back, warm orange breast, dark head","range_summary":"Breeds across most of US and Canada; winters southern US"},{"id":"northern-cardinal","common_name":"Northern Cardinal","scientific_name":"Cardinalis cardinalis","habitat":"Woodland edges, gardens, shrubby yards","appearance":"Male bright red with crest; female warm tan with red accents","range_summary":"Eastern and central US into southern Ontario"},{"id":"blue-jay","common_name":"Blue Jay","scientific_name":"Cyanocitta cristata","habitat":"Forests, parks, suburban yards","appearance":"Blue upperparts, white underparts, black necklace, crest","range_summary":"Eastern and central North America"},{"id":"black-capped-chickadee","common_name":"Black-capped Chickadee","scientific_name":"Poecile atricapillus","habitat":"Mixed forests, backyard feeders","appearance":"Black cap and bib, white cheeks, soft gray body","range_summary":"Northern US and much of Canada"},{"id":"downy-woodpecker","common_name":"Downy Woodpecker","scientific_name":"Dryobates pubescens","habitat":"Woodlands, orchards, feeders","appearance":"Small black-and-white barred back; males have red nape","range_summary":"Nearly continent-wide in US and Canada"},{"id":"mourning-dove","common_name":"Mourning Dove","scientific_name":"Zenaida macroura","habitat":"Open country and suburbs","appearance":"Soft gray-brown with long pointed tail","range_summary":"Widespread US and southern Canada"},{"id":"house-finch","common_name":"House Finch","scientific_name":"Haemorhous mexicanus","habitat":"Suburbs and parks","appearance":"Male red on head and breast with streaked sides","range_summary":"Widespread US; expanding in southern Canada"},{"id":"american-goldfinch","common_name":"American Goldfinch","scientific_name":"Spinus tristis","habitat":"Weedy fields, edges, feeders","appearance":"Breeding male bright yellow with black cap and wings","range_summary":"US and southern Canada"},{"id":"song-sparrow","common_name":"Song Sparrow","scientific_name":"Melospiza melodia","habitat":"Brushy edges and marshes","appearance":"Streaked brown with a central breast spot","range_summary":"Continent-wide"},{"id":"dark-eyed-junco","common_name":"Dark-eyed Junco","scientific_name":"Junco hyemalis","habitat":"Woods; feeders in winter","appearance":"Slate-colored with white belly and white outer tail","range_summary":"Breeds north; winters across much of US"},{"id":"red-winged-blackbird","common_name":"Red-winged Blackbird","scientific_name":"Agelaius phoeniceus","habitat":"Marshes and wet fields","appearance":"Male glossy black with red-and-yellow shoulder patches","range_summary":"Widespread wetlands"},{"id":"baltimore-oriole","common_name":"Baltimore Oriole","scientific_name":"Icterus galbula","habitat":"Open woods and parks","appearance":"Male fiery orange and black","range_summary":"Eastern US and southern Canada in summer"},{"id":"eastern-bluebird","common_name":"Eastern Bluebird","scientific_name":"Sialia sialis","habitat":"Open fields with nest boxes","appearance":"Male vivid blue with rusty breast","range_summary":"Eastern US and southeastern Canada"},{"id":"cedar-waxwing","common_name":"Cedar Waxwing","scientific_name":"Bombycilla cedrorum","habitat":"Fruiting trees, orchards","appearance":"Sleek tan with black mask and yellow tip on tail","range_summary":"US and southern Canada"},{"id":"ruby-throated-hummingbird","common_name":"Ruby-throated Hummingbird","scientific_name":"Archilochus colubris","habitat":"Gardens, woodland edges","appearance":"Tiny; male with ruby throat, metallic green back","range_summary":"Eastern North America in summer"},{"id":"great-blue-heron","common_name":"Great Blue Heron","scientific_name":"Ardea herodias","habitat":"Shorelines, marshes, ponds","appearance":"Tall blue-gray wader with long S-shaped neck","range_summary":"Near water across US and Canada"},{"id":"canada-goose","common_name":"Canada Goose","scientific_name":"Branta canadensis","habitat":"Lakes, parks, fields","appearance":"Brown body, black neck, white chinstrap","range_summary":"Continent-wide"},{"id":"mallard","common_name":"Mallard","scientific_name":"Anas platyrhynchos","habitat":"Ponds, marshes, parks","appearance":"Male green head and yellow bill; female mottled brown","range_summary":"Widespread wetlands"},{"id":"bald-eagle","common_name":"Bald Eagle","scientific_name":"Haliaeetus leucocephalus","habitat":"Lakes, rivers, coasts","appearance":"Adult white head and tail, dark body, huge yellow bill","range_summary":"Recovered across much of US and Canada"},{"id":"red-tailed-hawk","common_name":"Red-tailed Hawk","scientific_name":"Buteo jamaicensis","habitat":"Open country, roadsides","appearance":"Broad wings; adults with brick-red tail","range_summary":"Continent-wide"},{"id":"great-horned-owl","common_name":"Great Horned Owl","scientific_name":"Bubo virginianus","habitat":"Forests, deserts, suburbs","appearance":"Large owl with ear tufts and yellow eyes","range_summary":"Continent-wide"},{"id":"wild-turkey","common_name":"Wild Turkey","scientific_name":"Meleagris gallopavo","habitat":"Woods and fields","appearance":"Large dark bird with fan tail (males)","range_summary":"Much of US and southern Canada"},{"id":"tufted-titmouse","common_name":"Tufted Titmouse","scientific_name":"Baeolophus bicolor","habitat":"Eastern deciduous woods, feeders","appearance":"Gray with crest and peach flanks","range_summary":"Eastern United States"},{"id":"carolina-wren","common_name":"Carolina Wren","scientific_name":"Thryothorus ludovicianus","habitat":"Thickets, yards","appearance":"Warm brown with bold white eyebrow","range_summary":"Southeast and expanding north"}];</script><script>(function () {
-"use strict";
-const SPECIES = window.BIRDCARD_SPECIES || [];
-const REGION_BIAS = {
-northeast: ["american-robin","blue-jay","black-capped-chickadee","northern-cardinal","tufted-titmouse","baltimore-oriole","white-breasted-nuthatch"],
-southeast: ["northern-cardinal","carolina-wren","northern-mockingbird","ruby-throated-hummingbird","indigo-bunting","mourning-dove","blue-jay"],
-midwest: ["american-robin","red-winged-blackbird","american-goldfinch","downy-woodpecker","house-finch","song-sparrow","american-crow"],
-southwest: ["house-finch","mourning-dove","northern-mockingbird","great-horned-owl","red-tailed-hawk","house-sparrow","canada-goose"],
-west: ["house-finch","american-crow","red-tailed-hawk","great-blue-heron","mallard","dark-eyed-junco","cedar-waxwing"],
-"pacific-nw": ["american-robin","dark-eyed-junco","bald-eagle","great-blue-heron","black-capped-chickadee","pileated-woodpecker","canada-goose"],
-rockies: ["dark-eyed-junco","american-robin","black-capped-chickadee","red-tailed-hawk","bald-eagle","mallard","northern-flicker"],
-"canada-north": ["canada-goose","black-capped-chickadee","dark-eyed-junco","bald-eagle","american-crow","great-horned-owl","mallard"]
-};
-const STORAGE_KEY = "birdcard-demo-collection-v1";
-const REGION_KEY = "birdcard-demo-region-v1";
-const state = {
-screen: "landing",
-region: localStorage.getItem(REGION_KEY) || "",
-photoDataUrl: null,
-candidates: [],
-selectedId: null,
-detailId: null
-};
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => [...document.querySelectorAll(sel)];
-function toast(msg) {
-const el = $("#toast");
-el.textContent = msg;
-el.classList.add("show");
-clearTimeout(toast._t);
-toast._t = setTimeout(() => el.classList.remove("show"), 2200);
-}
-function loadCollection() {
-try {
-return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-} catch {
-return [];
-}
-}
-function saveCollection(items) {
-localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
-function speciesById(id) {
-return SPECIES.find((s) => s.id === id);
-}
-function regionLabel(value) {
-const opt = [...$("#region").options].find((o) => o.value === value);
-return opt ? opt.textContent : "—";
-}
-function showScreen(name) {
-state.screen = name;
-$$(".screen").forEach((s) => s.classList.toggle("active", s.dataset.screen === name));
-$$(".nav button").forEach((b) => {
-const map = { landing: "nav-home", capture: "nav-spot", identify: "nav-spot", region: "nav-spot", collection: "nav-deck", detail: "nav-deck" };
-b.classList.toggle("active", b.id === map[name]);
-});
-if (name === "collection") renderCollection();
-if (name === "capture") {
-$("#region-label").textContent = regionLabel(state.region);
-if (!state.region) {
-// gently nudge back if somehow skipped
-}
-}
-window.scrollTo({ top: 0, behavior: "smooth" });
-}
-function shuffle(arr) {
-const a = arr.slice();
-for (let i = a.length - 1; i > 0; i--) {
-const j = Math.floor(Math.random() * (i + 1));
-[a[i], a[j]] = [a[j], a[i]];
-}
-return a;
-}
-function mockIdentify() {
-const bias = (REGION_BIAS[state.region] || []).filter((id) => speciesById(id));
-const pool = bias.length ? bias : SPECIES.map((s) => s.id);
-const top = pool[Math.floor(Math.random() * pool.length)];
-const others = shuffle(SPECIES.map((s) => s.id).filter((id) => id !== top)).slice(0, 3);
-const confs = [0.72 + Math.random() * 0.22, 0.35 + Math.random() * 0.25, 0.18 + Math.random() * 0.15, 0.08 + Math.random() * 0.1]
-.map((n) => Math.round(n * 100) / 100)
-.sort((a, b) => b - a);
-const ids = [top, ...others];
-return ids.map((id, i) => ({ id, confidence: confs[i], species: speciesById(id) }));
-}
-function renderGuess() {
-const top = state.candidates.find((c) => c.id === state.selectedId) || state.candidates[0];
-if (!top) return;
-$("#guess-img").src = top.species.reference_image_url;
-$("#guess-img").alt = top.species.common_name;
-$("#guess-name").textContent = top.species.common_name;
-$("#guess-sci").textContent = top.species.scientific_name;
-$("#guess-conf").textContent = Math.round(top.confidence * 100) + "%";
-const box = $("#candidates");
-box.innerHTML = "";
-state.candidates.forEach((c) => {
-const btn = document.createElement("button");
-btn.type = "button";
-btn.className = "cand" + (c.id === state.selectedId ? " selected" : "");
-btn.innerHTML = `<img src="${c.species.reference_image_url}" alt="" /><div><strong>${c.species.common_name}</strong><div class="muted" style="font-size:.8rem">${c.species.scientific_name}</div></div><div class="pct">${Math.round(c.confidence * 100)}%</div>`;
-btn.addEventListener("click", () => {
-state.selectedId = c.id;
-renderGuess();
-});
-box.appendChild(btn);
-});
-}
-function renderCollection() {
-const items = loadCollection();
-$("#collection-count").textContent = String(items.length);
-const empty = $("#collection-empty");
-const grid = $("#collection-grid");
-if (!items.length) {
-empty.hidden = false;
-grid.hidden = true;
-grid.innerHTML = "";
-return;
-}
-empty.hidden = true;
-grid.hidden = false;
-grid.innerHTML = "";
-items.forEach((card) => {
-const sp = speciesById(card.speciesId) || { common_name: "Unknown", reference_image_url: "" };
-const btn = document.createElement("button");
-btn.type = "button";
-btn.className = "tile";
-const imgSrc = card.photoDataUrl || sp.reference_image_url;
-btn.innerHTML = `<img src="${imgSrc}" alt="" /><div class="meta"><strong>${sp.common_name}</strong><span>${Math.round((card.confidence || 0) * 100)}% · ${regionLabel(card.region)}</span></div>`;
-btn.addEventListener("click", () => openDetail(card.id));
-grid.appendChild(btn);
-});
-}
-function openDetail(cardId) {
-const card = loadCollection().find((c) => c.id === cardId);
-if (!card) return;
-const sp = speciesById(card.speciesId);
-if (!sp) return;
-state.detailId = cardId;
-$("#detail-photo").src = card.photoDataUrl || sp.reference_image_url;
-$("#detail-name").textContent = sp.common_name;
-$("#detail-sci").textContent = sp.scientific_name;
-$("#detail-when").textContent = new Date(card.createdAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-$("#detail-region").textContent = regionLabel(card.region);
-$("#detail-habitat").textContent = sp.habitat;
-$("#detail-appearance").textContent = sp.appearance;
-$("#detail-range").textContent = sp.range_summary;
-showScreen("detail");
-}
-function readFileAsDataURL(file) {
-return new Promise((resolve, reject) => {
-const reader = new FileReader();
-reader.onload = () => resolve(reader.result);
-reader.onerror = reject;
-reader.readAsDataURL(file);
-});
-}
-// Events
-$("#btn-start").addEventListener("click", () => {
-if (state.region) $("#region").value = state.region;
-$("#btn-region-next").disabled = !$("#region").value;
-showScreen("region");
-});
-$("#btn-skip-collection").addEventListener("click", () => showScreen("collection"));
-$("#region").addEventListener("change", (e) => {
-state.region = e.target.value;
-localStorage.setItem(REGION_KEY, state.region);
-$("#btn-region-next").disabled = !state.region;
-});
-$("#btn-region-next").addEventListener("click", () => {
-if (!state.region) return;
-showScreen("capture");
-});
-$("#photo-input").addEventListener("change", async (e) => {
-const file = e.target.files && e.target.files[0];
-if (!file) return;
-try {
-const dataUrl = await readFileAsDataURL(file);
-state.photoDataUrl = dataUrl;
-const img = $("#preview-img");
-img.src = dataUrl;
-img.hidden = false;
-$("#preview-placeholder").hidden = true;
-$("#btn-identify").disabled = false;
-} catch {
-toast("Could not read that image");
-}
-});
-$("#btn-identify").addEventListener("click", async () => {
-if (!state.photoDataUrl) return;
-showScreen("identify");
-$("#identify-loading").hidden = false;
-$("#identify-result").hidden = true;
-await new Promise((r) => setTimeout(r, 1100 + Math.random() * 700));
-state.candidates = mockIdentify();
-state.selectedId = state.candidates[0].id;
-$("#identify-loading").hidden = true;
-$("#identify-result").hidden = false;
-renderGuess();
-});
-$("#btn-retake").addEventListener("click", () => showScreen("capture"));
-$("#btn-confirm").addEventListener("click", () => {
-const pick = state.candidates.find((c) => c.id === state.selectedId);
-if (!pick) return;
-const items = loadCollection();
-const card = {
-id: "card-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-speciesId: pick.id,
-confidence: pick.confidence,
-region: state.region,
-photoDataUrl: state.photoDataUrl,
-createdAt: new Date().toISOString()
-};
-items.unshift(card);
-saveCollection(items);
-toast("Card added to your collection! 🍃");
-state.photoDataUrl = null;
-$("#preview-img").hidden = true;
-$("#preview-img").removeAttribute("src");
-$("#preview-placeholder").hidden = false;
-$("#btn-identify").disabled = true;
-$("#photo-input").value = "";
-openDetail(card.id);
-});
-$("#btn-delete-card").addEventListener("click", () => {
-if (!state.detailId) return;
-const next = loadCollection().filter((c) => c.id !== state.detailId);
-saveCollection(next);
-state.detailId = null;
-toast("Card removed");
-showScreen("collection");
-});
-$$("[data-nav]").forEach((el) => {
-el.addEventListener("click", () => {
-const dest = el.getAttribute("data-nav");
-if (dest === "capture" && !state.region) {
-showScreen("region");
-toast("Pick a region first");
-return;
-}
-if (dest === "spot") return;
-showScreen(dest);
-});
-});
-// Init
-if (state.region) {
-$("#region").value = state.region;
-$("#btn-region-next").disabled = false;
-}
-showScreen("landing");
-})();</script></body></html>
+    <section id="screen-landing" class="screen active" data-screen="landing">
+      <div class="hero">
+        <h1>Turn backyard birds into collectible cards</h1>
+        <p>Pick your region, snap a photo, and let BirdWatcher AI turn it into a card for your collection.</p>
+        <div class="demo-note">This is a <strong>Phase 1 web demo</strong> — not the App Store build. Collection stays on this device via localStorage. Requires <code>GEMINI_API_KEY</code> in Supabase Edge secrets for live ID.</div>
+      </div>
+      <div class="stack">
+        <div class="card">
+          <h2>How it works</h2>
+          <p>1) Choose a US/Canada region · 2) Upload or take a photo · 3) Confirm an AI guess · 4) Grow your deck.</p>
+        </div>
+        <label class="check-row" for="use-mock">
+          <input type="checkbox" id="use-mock" />
+          <span>Use offline mock (no AI) — random guesses from the embedded species deck</span>
+        </label>
+        <button class="btn row" id="btn-start">Start spotting →</button>
+        <button class="btn secondary" id="btn-skip-collection">View my collection</button>
+      </div>
+    </section>
+
+    <section id="screen-region" class="screen" data-screen="region">
+      <div class="card">
+        <h2>Where are you spotting?</h2>
+        <p>Region helps bias identification toward birds common nearby.</p>
+        <label class="label" for="region" style="margin-top:14px">US / Canada region</label>
+        <select id="region">
+          <option value="">Select a region…</option>
+          <option value="northeast">Northeast US & Atlantic Canada</option>
+          <option value="southeast">Southeast US</option>
+          <option value="midwest">Midwest US & Great Lakes</option>
+          <option value="southwest">Southwest US</option>
+          <option value="west">West Coast US</option>
+          <option value="pacific-nw">Pacific Northwest & BC</option>
+          <option value="rockies">Rockies & Prairies</option>
+          <option value="canada-north">Northern Canada</option>
+        </select>
+        <div class="row-actions">
+          <button class="btn" id="btn-region-next" disabled>Continue</button>
+          <button class="btn ghost" data-nav="landing">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-capture" class="screen" data-screen="capture">
+      <div class="card">
+        <h2>Add a bird photo</h2>
+        <p>Use your camera on a phone, or upload from your gallery.</p>
+        <div class="preview-wrap" id="preview-wrap">
+          <div class="placeholder" id="preview-placeholder">Your photo will appear here 🌿</div>
+          <img id="preview-img" alt="Selected bird photo" hidden />
+        </div>
+        <div class="row-actions">
+          <label class="file-btn" for="photo-input">📷 Take photo or choose file</label>
+          <input id="photo-input" type="file" accept="image/*" capture="environment" />
+          <button class="btn" id="btn-identify" disabled>Identify bird</button>
+          <button class="btn ghost" data-nav="region">Back</button>
+        </div>
+        <p class="tiny">Region: <span id="region-label">—</span></p>
+      </div>
+    </section>
+
+    <section id="screen-identify" class="screen" data-screen="identify">
+      <div class="card identifying" id="identify-loading">
+        <div class="spinner" aria-hidden="true"></div>
+        <h2>Listening to the leaves…</h2>
+        <p class="muted" id="identify-loading-msg">BirdWatcher is matching your photo…</p>
+      </div>
+      <div class="card guess" id="identify-result" hidden>
+        <h2>Top guess</h2>
+        <div class="guess-main">
+          <img id="guess-img" alt="" />
+          <div>
+            <strong id="guess-name">—</strong>
+            <div class="muted" id="guess-sci" style="font-style:italic;font-size:.9rem"></div>
+            <div class="confidence">✨ <span id="guess-conf">—</span> confidence</div>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:8px;font-size:.9rem">Not sure? Tap another candidate below.</p>
+        <div class="candidates" id="candidates"></div>
+        <div class="row-actions">
+          <button class="btn" id="btn-confirm">That's my bird — add card</button>
+          <button class="btn secondary" id="btn-retake">Try another photo</button>
+        </div>
+        <p class="provider-line" id="identify-provider"></p>
+      </div>
+    </section>
+
+    <section id="screen-collection" class="screen" data-screen="collection">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px">
+        <div>
+          <h2 style="margin:0">Your collection</h2>
+          <p class="muted" style="margin:4px 0 0;font-size:.9rem"><span id="collection-count">0</span> cards · saved on this device</p>
+        </div>
+        <button class="btn secondary" style="width:auto;padding:10px 14px" data-nav="capture">+ Add</button>
+      </div>
+      <div id="collection-empty" class="empty card">
+        <div style="font-size:2rem;margin-bottom:8px">🪺</div>
+        <strong>No cards yet</strong>
+        <p style="margin-top:8px">Snap your first bird and we'll nest it here.</p>
+        <button class="btn" style="margin-top:16px" data-nav="region">Start collecting</button>
+      </div>
+      <div id="collection-grid" class="grid" hidden></div>
+    </section>
+
+    <section id="screen-detail" class="screen" data-screen="detail">
+      <div class="detail-hero">
+        <img id="detail-photo" alt="Your photo" />
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h2 id="detail-name" style="margin:0">—</h2>
+        <p id="detail-sci" class="muted" style="font-style:italic;margin:4px 0 0"></p>
+        <p class="tiny" style="text-align:left;margin-top:8px">Added <span id="detail-when"></span> · <span id="detail-region"></span></p>
+        <dl class="facts">
+          <div class="fact"><dt>Habitat</dt><dd id="detail-habitat"></dd></div>
+          <div class="fact"><dt>Appearance</dt><dd id="detail-appearance"></dd></div>
+          <div class="fact"><dt>Range</dt><dd id="detail-range"></dd></div>
+        </dl>
+        <div class="row-actions">
+          <button class="btn secondary" data-nav="collection">Back to collection</button>
+          <button class="btn ghost" id="btn-delete-card">Remove card</button>
+        </div>
+      </div>
+    </section>
+
+    <nav class="nav" aria-label="Primary">
+      <button type="button" data-nav="landing" id="nav-home">Home</button>
+      <button type="button" data-nav="capture" id="nav-spot">Spot</button>
+      <button type="button" data-nav="collection" id="nav-deck">Deck</button>
+    </nav>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="species.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
