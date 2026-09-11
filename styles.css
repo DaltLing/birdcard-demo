@@ -119,15 +119,62 @@ select {
   border: 1px solid rgba(124,179,66,.35);
 }
 input[type=file] { display: none; }
-.identifying {
-  text-align: center; padding: 36px 12px;
+/* Full-viewport identify loading (within .app) — dominates during wait */
+.identify-loading-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px calc(24px + var(--safe-bottom));
+  text-align: center;
+  background:
+    radial-gradient(900px 500px at 50% 20%, #234d35 0%, transparent 60%),
+    var(--bg);
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
 }
+.identify-loading-panel[hidden] { display: none !important; }
+.identify-loading-inner {
+  max-width: 34ch;
+  width: 100%;
+}
+.identify-loading-panel h2 {
+  margin: 0 0 10px;
+  font-size: 1.35rem;
+}
+.identify-fact {
+  margin: 22px 0 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(200,230,201,.14);
+  color: var(--accent2);
+  font-size: .92rem;
+  line-height: 1.45;
+  min-height: 4.2em;
+  transition: opacity .35s ease;
+}
+.identify-fact.is-fading { opacity: 0; }
 .spinner {
   width: 54px; height: 54px; margin: 0 auto 16px; border-radius: 50%;
   border: 3px solid rgba(200,230,201,.2); border-top-color: var(--accent);
   animation: spin 0.85s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+/* While loading, keep identify screen as a full-app layer so nothing peeks */
+#screen-identify.is-loading {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 44;
+  padding: 0;
+  background: var(--bg);
+  animation: none;
+}
+#screen-identify.is-loading #identify-result { display: none !important; }
 .guess {
   display: grid; gap: 12px;
 }
@@ -175,17 +222,60 @@ input[type=file] { display: none; }
   border: 1px solid rgba(200,230,201,.12);
   box-shadow: var(--shadow);
 }
-.tile img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #0b1a12; }
+.tile img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; background: #0b1a12; }
 .tile .meta { padding: 10px 12px 12px; }
 .tile .meta strong { display: block; font-size: .95rem; }
 .tile .meta span { color: var(--muted); font-size: .75rem; }
 .empty {
   text-align: center; padding: 40px 16px; color: var(--muted);
 }
+.detail-hero { position: relative; }
+.detail-photo-btn {
+  display: block; width: 100%; padding: 0; border: 0; border-radius: 18px;
+  overflow: hidden; cursor: zoom-in; background: #0b1a12;
+  position: relative; color: inherit;
+}
 .detail-hero img {
-  width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 18px;
+  width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 18px;
   background: #0b1a12; display: block;
 }
+.expand-hint {
+  position: absolute; right: 10px; bottom: 10px;
+  font-size: .72rem; font-weight: 700; letter-spacing: .02em;
+  color: #102016; background: rgba(200,230,201,.88);
+  padding: 5px 9px; border-radius: 999px;
+  pointer-events: none; opacity: .92;
+}
+.detail-photo-btn:hover .expand-hint,
+.detail-photo-btn:focus-visible .expand-hint { opacity: 1; }
+
+/* Photo lightbox */
+.lightbox {
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+  background: rgba(0,0,0,.88);
+  backdrop-filter: blur(6px);
+  cursor: zoom-out;
+}
+.lightbox[hidden] { display: none !important; }
+.lightbox img {
+  max-width: min(100%, 520px);
+  max-height: min(88dvh, 900px);
+  width: auto; height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.5);
+  cursor: default;
+}
+.lightbox-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 42px; height: 42px; border: 0; border-radius: 50%;
+  background: rgba(255,255,255,.12); color: #fff;
+  font-size: 1.6rem; line-height: 1; cursor: pointer;
+  display: grid; place-items: center;
+}
+.lightbox-close:hover { background: rgba(255,255,255,.22); }
 .facts { display: grid; gap: 10px; margin-top: 14px; }
 .fact {
   background: rgba(0,0,0,.18); border-radius: 14px; padding: 12px 14px;
