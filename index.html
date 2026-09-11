@@ -82,10 +82,13 @@
     </section>
 
     <section id="screen-identify" class="screen" data-screen="identify">
-      <div class="card identifying" id="identify-loading">
-        <div class="spinner" aria-hidden="true"></div>
-        <h2>Listening to the leaves…</h2>
-        <p class="muted" id="identify-loading-msg">BirdWatcher is matching your photo…</p>
+      <div class="identify-loading-panel identifying" id="identify-loading" hidden>
+        <div class="identify-loading-inner">
+          <div class="spinner" aria-hidden="true"></div>
+          <h2>Listening to the leaves…</h2>
+          <p class="muted" id="identify-loading-msg">BirdWatcher is matching your photo…</p>
+          <p class="identify-fact" id="identify-fact" aria-live="polite"></p>
+        </div>
       </div>
       <div class="card guess" id="identify-result" hidden>
         <h2>Top guess</h2>
@@ -126,7 +129,10 @@
 
     <section id="screen-detail" class="screen" data-screen="detail">
       <div class="detail-hero">
-        <img id="detail-photo" alt="Your photo" />
+        <button type="button" class="detail-photo-btn" id="detail-photo-btn" aria-label="Expand photo">
+          <img id="detail-photo" alt="Your photo" />
+          <span class="expand-hint" aria-hidden="true">Tap to expand</span>
+        </button>
       </div>
       <div class="card" style="margin-top:14px">
         <h2 id="detail-name" style="margin:0">—</h2>
@@ -149,6 +155,10 @@
       <button type="button" data-nav="capture" id="nav-spot">Spot</button>
       <button type="button" data-nav="collection" id="nav-deck">Deck</button>
     </nav>
+  </div>
+  <div class="lightbox" id="lightbox" hidden>
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close photo">×</button>
+    <img id="lightbox-img" alt="Expanded bird photo" />
   </div>
   <div class="toast" id="toast" role="status"></div>
   <script src="species.js"></script>
